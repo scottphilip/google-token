@@ -2,6 +2,7 @@
 
 Google Token
 ============
+
 Python Package allowing [Google Account](https://myaccount.google.com) Authorization Tokens to be issued
 when user is not in attendance.
 
@@ -10,8 +11,22 @@ Installation Instructions
 
     pip install google-token
 
+Properties
+----------
+
+When you manually log into the web application, the initial URL will be 
+in the format;
+
+    https://accounts.google.com/o/oauth2/v2/auth?response_type=token&client_id=0000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com&redirect_uri=https://www.website.com/google/callback&scope=https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile
+    
+| Property     	| Example                                                                                         	|
+|:-------------	|:------------------------------------------------------------------------------------------------	|
+| Client Id    	| 0000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com                       	|
+| Redirect Uri 	| https://www.website.com/google/callback                                                         	|
+| Scope        	| https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile 	|
+
 Usage Instructions
--------------------------
+------------------
 
 First time login will create a Cookies file which stores the issued
 tokens which will subsequently be reused.  It is recommended not to
@@ -44,28 +59,16 @@ Once the cookies file is created, the credentials can be omitted.
     print(token)
 ```
 
-Properties
-------
-
-When you manually log into the web application, the initial URL will be 
-in the format;
-
-    https://accounts.google.com/o/oauth2/v2/auth?response_type=token&client_id=0000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com&redirect_uri=https://www.website.com/google/callback&scope=https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile
-    
-| Property     	| Example                                                                                         	|
-|--------------	|-------------------------------------------------------------------------------------------------	|
-| Client Id    	| 0000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com                       	|
-| Redirect Uri 	| https://www.website.com/google/callback                                                         	|
-| Scope        	| https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile 	|
-
 Dependencies
 ------------
-> [Selenium](https://pypi.python.org/pypi/selenium)
 
-> [Pyotp](https://pypi.python.org/pypi/pyotp)
+[Selenium](https://pypi.python.org/pypi/selenium)
+
+[Pyotp](https://pypi.python.org/pypi/pyotp)
 
 Credits
 -------
+
 Scott Philip
  
 Berlin, Germany
