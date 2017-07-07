@@ -4,7 +4,6 @@ Google User Account Automation
 
 Installation Instructions
 -------------------------
-::
 
     pip install google-token 
 
