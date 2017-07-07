@@ -1,6 +1,11 @@
 from GoogleToken.Configuration import GoogleTokenConfiguration
-from urllib.parse import urlencode
-from urllib.request import HTTPErrorProcessor
+from os.path import expanduser, join
+try:
+    from urllib.parse import urlencode
+    from urllib.request import HTTPErrorProcessor
+except ImportError:
+    from urllib import urlencode
+    from urllib2 import HTTPErrorProcessor
 
 
 class GoogleTokenBase(object):
@@ -12,29 +17,22 @@ class GoogleTokenBase(object):
         self.params = params
         self.config = config if config is not None else GoogleTokenConfiguration()
 
-    def __get_oauth_url(self):
-        data = self.config.oauth2_data
+    def get_oauth_url(self):
+        data = {}
+        data.update(self.config.oauth2_data)
         for key in data:
-            if data[key].upper() in self.params.upper():
-                data[key] = self.params[key]
+            if hasattr(self.params, data[key]):
+                data[key] = getattr(self.params, data[key])
         return "{0}://{1}{2}?{3}" \
             .format(self.config.oauth2_protocol,
                     self.config.oauth2_domain,
                     self.config.oauth2_path,
                     urlencode(data))
 
-    def __get_cookie_file_path(self):
+    def get_cookie_file_path(self):
         if self.params.cookie_storage_path is not None:
             return self.params.cookie_storage_path
-        return "~/GoogleToken/{0}.cookies".format(self.params.account_email)
-
-    def __error(self, *args):
-        if self.params.logger is not None:
-            self.params.logger.error(args)
-
-    def __debug(self, *args):
-        if self.params.logger is not None:
-            self.params.logger.debug(args)
+        return join(expanduser("~"), "{0}.cookies".format(self.params.account_email))
 
 
 class GoogleTokenHttpNoRedirect(HTTPErrorProcessor):
@@ -84,3 +82,8 @@ class GoogleTokenChallengeTypes(object):
     """
     AZ = "az"
     TOTP = "totp"
+
+
+def debug(config, *args, **kwargs):
+    if config.logger is not None:
+        config.logger.debug(args, **kwargs)
