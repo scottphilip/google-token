@@ -1,6 +1,7 @@
 # Google Token
 Google User Account Automation
 
+[![Build Status](https://travis-ci.org/scottphilip/google-token.svg?branch=master)](https://travis-ci.org/scottphilip/google-token)
 
 ## Credits
 ##### Scott Philip 
