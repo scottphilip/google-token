@@ -12,11 +12,10 @@ sudo: true
 
 install:
   - pip install -r REQUIREMENTS.txt
-  - pip install pytest
   - python setup.py install
 
 script:
-  - python Tests/TestAll.py
+  - python setup.py test
 
 deploy:
 
