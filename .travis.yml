@@ -8,6 +8,8 @@ python:
   - 3.5
   - 3.6
 
+sudo: true
+
 install:
   - pip install -r REQUIREMENTS.txt
   - pip install pytest
