@@ -37,6 +37,8 @@ class GoogleTokenParameters(object):
         self.oauth_client_id = oauth_client_id
         self.oauth_redirect_uri = oauth_redirect_uri
         self.oauth_scope = oauth_scope
+        self.logger = logger
+        self.image_path = image_path
         self.execute_script = execute_script
 
 
