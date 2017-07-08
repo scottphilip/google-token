@@ -1,5 +1,4 @@
-from setuptools import setup, find_packages
-
+from setuptools import setup
 
 setup(
     name='google-token',
@@ -7,7 +6,7 @@ setup(
     url='http://github.com/scottphilip/google-token',
     author='Scott Philip',
     author_email='sp@scottphilip.com',
-    packages=find_packages(),
+    packages=['GoogleToken'],
     version='0.1',
     install_requires=['selenium', 'pyotp'],
     license='GNU (v3) License',
