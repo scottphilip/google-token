@@ -1,3 +1,8 @@
+# Author:       Scott Philip (sp@scottphilip.com)
+# Version:      0.2 (10 July 2017)
+# Source:       https://github.com/scottphilip/google-token/
+# Licence:      GNU GENERAL PUBLIC LICENSE (Version 3, 29 June 2007)
+
 from GoogleToken.Utils import *
 from http.cookiejar import MozillaCookieJar
 from os.path import isfile
@@ -65,7 +70,8 @@ class GoogleTokenHttpHandler(GoogleTokenBase):
         response = self.opener.open(request)
         response_code = response.getcode()
         response_headers = response.info()
-        debug(self.config, "RECIEVED_RESPONSE", response_code, str(response_headers))
+        self.opener.close()
+        debug(self.config, "RECEIVED_RESPONSE", response_code, str(response_headers))
         if response_code != 302:
             raise Exception("UNEXPECTED_HTTP_RESPONSE_CODE", response_code, str(response_headers))
         if GoogleTokenPageElements.LOCATION not in response_headers:

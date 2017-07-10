@@ -49,3 +49,4 @@ Temporary Items
 /.idea/
 /build/
 /dist/
+GoogleToken/__pycache__/
