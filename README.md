@@ -9,12 +9,12 @@ when user is not in attendance.
 Installation Instructions
 -------------------------
 
-    pip install google-token
+    pip install GoogleToken
 
 Properties
 ----------
 
-When you manually log into the web application, the initial URL will be 
+When manually logging into a Google Account secured web application, the initial URL will be
 in the format;
 
     https://accounts.google.com/o/oauth2/v2/auth?response_type=token&client_id=0000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com&redirect_uri=https://www.website.com/google/callback&scope=https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile

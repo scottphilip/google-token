@@ -1,4 +1,7 @@
-
+# Author:       Scott Philip (sp@scottphilip.com)
+# Version:      0.2 (10 July 2017)
+# Source:       https://github.com/scottphilip/google-token/
+# Licence:      GNU GENERAL PUBLIC LICENSE (Version 3, 29 June 2007)
 
 
 class GoogleTokenParameters(object):
@@ -37,6 +40,8 @@ class GoogleTokenParameters(object):
         self.oauth_client_id = oauth_client_id
         self.oauth_redirect_uri = oauth_redirect_uri
         self.oauth_scope = oauth_scope
+        self.logger = logger
+        self.image_path = image_path
         self.execute_script = execute_script
 
 
