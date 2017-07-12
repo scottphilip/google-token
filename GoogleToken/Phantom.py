@@ -1,5 +1,5 @@
 # Author:       Scott Philip (sp@scottphilip.com)
-# Version:      0.2 (10 July 2017)
+# Version:      0.3 (13 July 2017)
 # Source:       https://github.com/scottphilip/google-token/
 # Licence:      GNU GENERAL PUBLIC LICENSE (Version 3, 29 June 2007)
 
@@ -26,8 +26,8 @@ class GoogleTokenPhantomLogin(GoogleTokenBase):
     is only required for the first login.
     """
 
-    def __init__(self, params, config):
-        super(GoogleTokenPhantomLogin, self).__init__(params, config)
+    def __init__(self, config):
+        super(GoogleTokenPhantomLogin, self).__init__(config)
         self.oauth2_url = super(GoogleTokenPhantomLogin, self).get_oauth_url()
         self.driver = webdriver \
             .PhantomJS(executable_path=self.config.phantomjs_path,
@@ -80,11 +80,11 @@ class GoogleTokenPhantomLogin(GoogleTokenBase):
 
     def save_screen_shot(self, name):
         if self.config.image_path is not None:
-            folder_path = join(self.config.image_path, self.params.account_email)
+            folder_path = join(self.config.image_path)
             if not exists(folder_path):
                 makedirs(folder_path)
-            file_name = "{0}-{1}.png"\
-                .format(str(datetime.now().strftime("%Y%m%d-%H%M%S")), name)
+            file_name = "{0}-{1}.png" \
+                .format(str(datetime.now().strftime("%Y-%m-%d_%H-%M-%S")), name)
             full_path = join(folder_path, file_name)
             self.driver.get_screenshot_as_file(full_path)
             debug(self.config, "SCREEN_SHOT_SAVED", self.driver.current_url, full_path)
@@ -98,8 +98,8 @@ class GoogleTokenPhantomLogin(GoogleTokenBase):
         self.save_screen_shot("ENTER_EMAIL")
         WebDriverWait(self.driver, self.config.timeout_seconds)\
             .until(expected_conditions.element_to_be_clickable((By.ID, GoogleTokenPageElements.EMAIL)))
-        self.driver.find_element_by_id(GoogleTokenPageElements.EMAIL)\
-            .send_keys(self.params.account_email)
+        self.driver.find_element_by_id(GoogleTokenPageElements.EMAIL) \
+            .send_keys(self.config.account_email)
         WebDriverWait(self.driver, self.config.timeout_seconds)\
             .until(expected_conditions.element_to_be_clickable((By.ID, GoogleTokenPageElements.NEXT)))
         self.driver.find_element_by_id(GoogleTokenPageElements.NEXT).click()
@@ -108,8 +108,8 @@ class GoogleTokenPhantomLogin(GoogleTokenBase):
         self.save_screen_shot("ENTER_PASSWORD")
         WebDriverWait(self.driver, self.config.timeout_seconds)\
             .until(expected_conditions.element_to_be_clickable((By.ID, GoogleTokenPageElements.PASSWD)))
-        self.driver.find_element_by_id(GoogleTokenPageElements.PASSWD)\
-            .send_keys(self.params.account_password)
+        self.driver.find_element_by_id(GoogleTokenPageElements.PASSWD) \
+            .send_keys(self.config.account_password)
         WebDriverWait(self.driver, self.config.timeout_seconds)\
             .until(expected_conditions.element_to_be_clickable((By.ID, GoogleTokenPageElements.SIGNIN)))
         self.driver.find_element_by_id(GoogleTokenPageElements.SIGNIN).click()
@@ -120,7 +120,7 @@ class GoogleTokenPhantomLogin(GoogleTokenBase):
 
     def dual_factor(self):
         if self.driver.current_url.find(self.get_challenge_path(GoogleTokenChallengeTypes.TOTP)) > 0:
-            return self.enter_totp(self.params.account_otp_secret)
+            return self.enter_totp(self.config.account_otp_secret)
         elif self.driver.current_url.count(self.get_challenge_path(GoogleTokenChallengeTypes.AZ)) > 0:
             return self.wait_for(self.is_login_complete, 300)
         return True
@@ -150,13 +150,13 @@ class GoogleTokenPhantomLogin(GoogleTokenBase):
         return self.wait_for(self.is_login_complete, self.config.timeout_seconds)
 
     def is_login_complete(self):
-        if self.params.execute_script is not None:
-            return self.driver.execute_script("return {0} != null".format(self.params.execute_script))
+        if self.config.execute_script is not None:
+            return self.driver.execute_script("return {0} != null".format(self.config.execute_script))
         current_url_obj = urlparse(self.driver.current_url)
-        redirect_url_obj = urlparse(self.params.oauth_redirect_uri)
+        redirect_url_obj = urlparse(self.config.oauth_redirect_uri)
         return current_url_obj.netloc.upper() == redirect_url_obj.netloc.upper()
 
     def get_script_result(self):
-        if self.params.execute_script is not None:
-            return self.driver.execute_script("return {0}".format(self.params.execute_script))
+        if self.config.execute_script is not None:
+            return self.driver.execute_script("return {0}".format(self.config.execute_script))
         return True

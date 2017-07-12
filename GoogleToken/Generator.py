@@ -1,11 +1,12 @@
 # Author:       Scott Philip (sp@scottphilip.com)
-# Version:      0.2 (10 July 2017)
+# Version:      0.3 (13 July 2017)
 # Source:       https://github.com/scottphilip/google-token/
 # Licence:      GNU GENERAL PUBLIC LICENSE (Version 3, 29 June 2007)
 
 from GoogleToken.Utils import *
 from http.cookiejar import MozillaCookieJar
 from os.path import isfile
+from json import dumps
 try:
     from urllib.parse import urlparse, parse_qs
     from urllib.request import build_opener, Request, HTTPCookieProcessor
@@ -19,24 +20,27 @@ class GoogleTokenGenerator(GoogleTokenBase):
     Google Token Generator
     """
 
-    def __init__(self, params, config=None):
-        super(GoogleTokenGenerator, self).__init__(params, config)
+    def __init__(self, config=None):
+        super(GoogleTokenGenerator, self).__init__(config)
+        debug(self.config, "SYSTEM_CONFIGURATION", config.json())
 
     def generate(self):
-        if not isfile(super(GoogleTokenGenerator, self).get_cookie_file_path()):
+        cookie_storage_path = super(GoogleTokenGenerator, self).get_cookie_file_path()
+        if not isfile(cookie_storage_path):
+            debug(self.config, "COOKIE_FILE_NOT_FOUND", cookie_storage_path)
             self.__phantom_login()
         return self.__cookies_login()
 
     def __phantom_login(self):
         debug(self.config, "PHANTOM_LOGIN_STARTING")
         from GoogleToken.Phantom import GoogleTokenPhantomLogin
-        phantom_login = GoogleTokenPhantomLogin(self.params, self.config)
+        phantom_login = GoogleTokenPhantomLogin(self.config)
         phantom_login.login()
         phantom_login.save_cookies()
 
     def __cookies_login(self):
         debug(self.config, "COOKIES_LOGIN_STARTING")
-        with GoogleTokenHttpHandler(self.params, self.config) as http_handler:
+        with GoogleTokenHttpHandler(self.config) as http_handler:
             return http_handler.get_access_token()
 
 
@@ -45,8 +49,8 @@ class GoogleTokenHttpHandler(GoogleTokenBase):
     Http Handler
     """
 
-    def __init__(self, params, config):
-        super(GoogleTokenHttpHandler, self).__init__(params, config)
+    def __init__(self, config):
+        super(GoogleTokenHttpHandler, self).__init__(config)
         self.cookie_jar = MozillaCookieJar()
         if not isfile(super(GoogleTokenHttpHandler, self).get_cookie_file_path()):
             raise Exception("COOKIE_FILE_NOT_FOUND", super(GoogleTokenHttpHandler, self).get_cookie_file_path())

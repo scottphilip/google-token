@@ -1,12 +1,16 @@
 # Author:       Scott Philip (sp@scottphilip.com)
-# Version:      0.2 (10 July 2017)
+# Version:      0.3 (13 July 2017)
 # Source:       https://github.com/scottphilip/google-token/
 # Licence:      GNU GENERAL PUBLIC LICENSE (Version 3, 29 June 2007)
+import json
+from os.path import expanduser, join
+from tempfile import gettempdir
+from datetime import datetime
 
 
-class GoogleTokenParameters(object):
+class GoogleTokenConfiguration:
     """
-    Account Parameters
+    Configuration
     """
 
     def __init__(self,
@@ -19,38 +23,8 @@ class GoogleTokenParameters(object):
                  oauth_scope=None,
                  logger=None,
                  image_path=None,
-                 execute_script=None):
-        """
-        :param account_email: Google Account Username/Email.
-        :param account_password: Google Account Password.  Required only for first login
-        :param account_otp_secret: Google One Time Passcode Secret.  Only required if
-                                   enabled and for the first login
-        :param cookie_storage_path: Path to file containing cookies for given account
-        :param oauth_client_id: OAUTH2 Client Id for login destination
-        :param oauth_redirect_uri: OAUTH2 Redirect URI for login destination
-        :param oauth_scope: OAUTH2 Scope for login destination
-        :param logger: Logger
-        :param image_path: Debugging screen shot directory
-        :param execute_script: Execute javascript to verify login success
-        """
-        self.account_email = account_email
-        self.account_password = account_password
-        self.account_otp_secret = account_otp_secret
-        self.cookie_storage_path = cookie_storage_path
-        self.oauth_client_id = oauth_client_id
-        self.oauth_redirect_uri = oauth_redirect_uri
-        self.oauth_scope = oauth_scope
-        self.logger = logger
-        self.image_path = image_path
-        self.execute_script = execute_script
-
-
-class GoogleTokenConfiguration(object):
-    """
-    System Configuration Settings
-    """
-
-    def __init__(self, phantomjs_path="phantomjs",
+                 execute_script=None,
+                 phantomjs_path="phantomjs",
                  phantomjs_config_useragent="phantomjs.page.settings.userAgent",
                  phantomjs_log_path=None,
                  cookies_ignore_discard=False,
@@ -64,16 +38,35 @@ class GoogleTokenConfiguration(object):
                  oauth2_path="/o/oauth2/v2/auth",
                  user_agent="Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0",
                  default_headers=None,
-                 oauth2_data=None,
-                 logger=None,
-                 image_path=None):
+                 oauth2_data=None
+                 ):
+
+        self.account_email = account_email
+        import os
+        if not os.path.isdir(join(gettempdir(), "GoogleToken", self.account_email)):
+            os.makedirs(join(gettempdir(), "GoogleToken", self.account_email))
+        if self.account_email is None:
+            raise Exception("account_email configuration must be set.")
+        self.account_password = account_password
+        self.account_otp_secret = account_otp_secret
+        self.cookie_storage_path = cookie_storage_path if cookie_storage_path is not None \
+            else join(expanduser("~"), "{0}.cookies".format(self.account_email))
+        self.oauth_client_id = oauth_client_id
+        self.oauth_redirect_uri = oauth_redirect_uri
+        self.oauth_scope = oauth_scope
+        self.logger = logger
+        self.image_path = image_path if image_path is not None else join(
+            gettempdir(),
+            "GoogleToken",
+            self.account_email,
+            datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
+        self.execute_script = execute_script
         self.phantomjs_path = phantomjs_path
         self.phantomjs_config_useragent = phantomjs_config_useragent
-        if phantomjs_log_path is None:
-            import os
-            self.phantomjs_log_path = os.path.join(os.path.expanduser("~"), "phantomjs.log")
-        else:
-            self.phantomjs_log_path = phantomjs_log_path
+        self.phantomjs_log_path = phantomjs_log_path if phantomjs_log_path is not None \
+            else join(gettempdir(),
+                      "GoogleToken",
+                      self.account_email, "phantomjs.log")
         self.cookies_ignore_discard = cookies_ignore_discard
         self.url_accounts = url_accounts
         self.url_my_account = url_my_account
@@ -84,14 +77,18 @@ class GoogleTokenConfiguration(object):
         self.oauth2_domain = oauth2_domain
         self.oauth2_path = oauth2_path
         self.user_agent = user_agent
-        self.logger = logger
-        self.image_path = image_path
-        self.default_headers = {"Accept": "application/json, text/plain, */*",
-                                "Accept-Language": "en-US",
-                                "Accept-Encoding": "gzip",
-                                "Connection": "Keep-Alive",
-                                "User-Agent": user_agent} if default_headers is None else default_headers
+        self.default_headers = {"User-Agent": user_agent} if default_headers is None else default_headers
         self.oauth2_data = {"response_type": "token",
                             "client_id": "oauth_client_id",
                             "redirect_uri": "oauth_redirect_uri",
                             "scope": "oauth_scope"} if oauth2_data is None else oauth2_data
+
+    def json(self):
+        result = {}
+        for attribute in self.__dict__:
+            try:
+                json.dumps(getattr(self, attribute))
+                result[attribute] = getattr(self, attribute)
+            except Exception:
+                ignore = True
+        return json.dumps(result)
