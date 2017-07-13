@@ -1,5 +1,5 @@
 # Author:       Scott Philip (sp@scottphilip.com)
-# Version:      0.3 (13 July 2017)
+# Version:      0.4 (13 July 2017)
 # Source:       https://github.com/scottphilip/google-token/
 # Licence:      GNU GENERAL PUBLIC LICENSE (Version 3, 29 June 2007)
 
@@ -86,9 +86,19 @@ class GoogleTokenHttpHandler(GoogleTokenBase):
         fragment_url_obj = parse_qs(fragment_url)
         if GoogleTokenPageElements.ACCESS_TOKEN not in fragment_url_obj:
             raise Exception("ACCESS_TOKEN_NOT_FOUND", response_code, str(response_headers))
-        for item in fragment_url_obj[GoogleTokenPageElements.ACCESS_TOKEN] or []:
+        access_token = self.get_first_value(fragment_url_obj, GoogleTokenPageElements.ACCESS_TOKEN)
+        expires_in_seconds = self.get_first_value(fragment_url_obj, GoogleTokenPageElements.EXPIRES_IN)
+        from datetime import datetime, timedelta
+        expiry_utc = datetime.utcnow() + timedelta(seconds=int(expires_in_seconds))
+
+        return access_token, expiry_utc
+
+    @staticmethod
+    def get_first_value(obj, attr_name):
+        for item in obj[attr_name] or []:
             return item
-        return fragment_url_obj[GoogleTokenPageElements.ACCESS_TOKEN]
+        return obj[attr_name]
+
 
     @staticmethod
     def get_fragment(url):

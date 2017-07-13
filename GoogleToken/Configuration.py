@@ -1,9 +1,10 @@
 # Author:       Scott Philip (sp@scottphilip.com)
-# Version:      0.3 (13 July 2017)
+# Version:      0.4 (13 July 2017)
 # Source:       https://github.com/scottphilip/google-token/
 # Licence:      GNU GENERAL PUBLIC LICENSE (Version 3, 29 June 2007)
 import json
-from os.path import expanduser, join
+from os.path import expanduser, join, isdir
+from os import makedirs
 from tempfile import gettempdir
 from datetime import datetime
 
@@ -38,13 +39,12 @@ class GoogleTokenConfiguration:
                  oauth2_path="/o/oauth2/v2/auth",
                  user_agent="Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0",
                  default_headers=None,
-                 oauth2_data=None
-                 ):
+                 oauth2_data=None):
 
         self.account_email = account_email
-        import os
-        if not os.path.isdir(join(gettempdir(), "GoogleToken", self.account_email)):
-            os.makedirs(join(gettempdir(), "GoogleToken", self.account_email))
+
+        if not isdir(join(gettempdir(), "GoogleToken", self.account_email)):
+            makedirs(join(gettempdir(), "GoogleToken", self.account_email))
         if self.account_email is None:
             raise Exception("account_email configuration must be set.")
         self.account_password = account_password
