@@ -1,2 +1,3 @@
 selenium
 pyotp
+cryptography
