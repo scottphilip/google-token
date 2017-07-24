@@ -1,12 +1,12 @@
 # Author:       Scott Philip (sp@scottphilip.com)
-# Version:      0.4 (13 July 2017)
+# Version:      0.5 (24 July 2017)
 # Source:       https://github.com/scottphilip/google-token/
 # Licence:      GNU GENERAL PUBLIC LICENSE (Version 3, 29 June 2007)
 
+from GoogleToken.Configuration import GoogleTokenConfiguration
 from GoogleToken.Utils import *
-from http.cookiejar import MozillaCookieJar
 from os.path import isfile
-from json import dumps
+
 try:
     from urllib.parse import urlparse, parse_qs
     from urllib.request import build_opener, Request, HTTPCookieProcessor
@@ -15,19 +15,18 @@ except ImportError:
     from urllib2 import HTTPCookieProcessor, build_opener, Request
 
 
-class GoogleTokenGenerator(GoogleTokenBase):
+class GoogleTokenGenerator(object):
     """
     Google Token Generator
     """
 
-    def __init__(self, config=None):
-        super(GoogleTokenGenerator, self).__init__(config)
-        debug(self.config, "SYSTEM_CONFIGURATION", config.json())
+    def __init__(self, **kwargs):
+        self.config = GoogleTokenConfiguration(**kwargs)
+        debug(self.config, "SYSTEM_CONFIGURATION", self.config.json())
 
     def generate(self):
-        cookie_storage_path = super(GoogleTokenGenerator, self).get_cookie_file_path()
-        if not isfile(cookie_storage_path):
-            debug(self.config, "COOKIE_FILE_NOT_FOUND", cookie_storage_path)
+        if not isfile(self.config.cookie_storage_path):
+            debug(self.config, "COOKIE_FILE_NOT_FOUND", self.config.cookie_storage_path)
             self.__phantom_login()
         return self.__cookies_login()
 
@@ -44,31 +43,40 @@ class GoogleTokenGenerator(GoogleTokenBase):
             return http_handler.get_access_token()
 
 
-class GoogleTokenHttpHandler(GoogleTokenBase):
+class GoogleTokenHttpHandler(object):
     """
     Http Handler
     """
 
     def __init__(self, config):
-        super(GoogleTokenHttpHandler, self).__init__(config)
-        self.cookie_jar = MozillaCookieJar()
-        if not isfile(super(GoogleTokenHttpHandler, self).get_cookie_file_path()):
-            raise Exception("COOKIE_FILE_NOT_FOUND", super(GoogleTokenHttpHandler, self).get_cookie_file_path())
-        self.cookie_jar.load(super(GoogleTokenHttpHandler, self).get_cookie_file_path())
+        self.config = config
+        if not isfile(self.config.cookie_storage_path):
+            raise Exception("COOKIE_FILE_NOT_FOUND", self.config.cookie_storage_path)
+        self.cookie_jar = open_cookie_jar(self.config)
         self.opener = build_opener(GoogleTokenHttpNoRedirect,
-                          HTTPCookieProcessor(self.cookie_jar))
+                                   HTTPCookieProcessor(self.cookie_jar))
         debug(self.config, "COOKIES_LOADED")
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.cookie_jar.save(super(GoogleTokenHttpHandler, self).get_cookie_file_path(),
-                             ignore_discard=self.config.cookies_ignore_discard)
+        save_cookie_jar(self.config, self.cookie_jar)
         debug(self.config, "COOKIES_SAVED")
 
+    def get_oauth_url(self):
+        data = {}
+        data.update(self.config.oauth2_data)
+        for key in data:
+            if hasattr(self.config, data[key]):
+                data[key] = getattr(self.config, data[key])
+        return "{0}://{1}{2}?{3}" \
+            .format(self.config.oauth2_protocol,
+                    self.config.oauth2_domain,
+                    self.config.oauth2_path, urlencode(data))
+
     def get_access_token(self):
-        request = Request(super(GoogleTokenHttpHandler, self).get_oauth_url(),
+        request = Request(self.get_oauth_url(),
                           headers=self.config.default_headers)
         debug(self.config, "SENDING_REQUEST")
         response = self.opener.open(request)
@@ -98,7 +106,6 @@ class GoogleTokenHttpHandler(GoogleTokenBase):
         for item in obj[attr_name] or []:
             return item
         return obj[attr_name]
-
 
     @staticmethod
     def get_fragment(url):

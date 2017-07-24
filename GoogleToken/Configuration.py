@@ -1,7 +1,8 @@
 # Author:       Scott Philip (sp@scottphilip.com)
-# Version:      0.4 (13 July 2017)
+# Version:      0.5 (24 July 2017)
 # Source:       https://github.com/scottphilip/google-token/
 # Licence:      GNU GENERAL PUBLIC LICENSE (Version 3, 29 June 2007)
+
 import json
 from os.path import expanduser, join, isdir
 from os import makedirs
@@ -9,79 +10,73 @@ from tempfile import gettempdir
 from datetime import datetime
 
 
-class GoogleTokenConfiguration:
-    """
-    Configuration
-    """
+class GoogleTokenConfiguration(object):
+    account_email = None
+    account_password = None
+    account_otp_secret = None
+    cookie_storage_path = None
+    oauth_client_id = None
+    oauth_redirect_uri = None
+    oauth_scope = None
+    logger = None
+    image_path = None
+    execute_script = None
+    phantomjs_path = "phantomjs"
+    phantomjs_config_useragent = "phantomjs.page.settings.userAgent"
+    phantomjs_log_path = None
+    cookies_ignore_discard = False
+    cookies_store_plain = False
+    url_accounts = "https://accounts.google.com"
+    url_my_account = "https://myaccount.google.com"
+    url_service_login = "https://accounts.google.com/ServiceLogin"
+    url_accounts_no_form = "https://accounts.google.com/x"
+    timeout_seconds = 30
+    oauth2_protocol = "https"
+    oauth2_domain = "accounts.google.com"
+    oauth2_path = "/o/oauth2/v2/auth"
+    user_agent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0"
+    default_headers = None
+    oauth2_data = None
 
-    def __init__(self,
-                 account_email=None,
-                 account_password=None,
-                 account_otp_secret=None,
-                 cookie_storage_path=None,
-                 oauth_client_id=None,
-                 oauth_redirect_uri=None,
-                 oauth_scope=None,
-                 logger=None,
-                 image_path=None,
-                 execute_script=None,
-                 phantomjs_path="phantomjs",
-                 phantomjs_config_useragent="phantomjs.page.settings.userAgent",
-                 phantomjs_log_path=None,
-                 cookies_ignore_discard=False,
-                 url_accounts="https://accounts.google.com",
-                 url_my_account="https://myaccount.google.com",
-                 url_service_login="https://accounts.google.com/ServiceLogin",
-                 url_accounts_no_form="https://accounts.google.com/x",
-                 timeout_seconds=30,
-                 oauth2_protocol="https",
-                 oauth2_domain="accounts.google.com",
-                 oauth2_path="/o/oauth2/v2/auth",
-                 user_agent="Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0",
-                 default_headers=None,
-                 oauth2_data=None):
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+                continue
+            raise Exception("Unknown Argument: {0}".format(key))
 
-        self.account_email = account_email
+        argument_missing = []
+        if self.account_email is None:
+            argument_missing.append("account_email")
+        if self.oauth_client_id is None:
+            argument_missing.append("oauth_client_id")
+        if self.oauth_redirect_uri is None:
+            argument_missing.append("oauth_redirect_uri")
+        if self.oauth_scope is None:
+            argument_missing.append("oauth_scope")
+        if len(argument_missing) > 0:
+            raise Exception("REQUIRED_ARGUMENT", str(argument_missing))
 
         if not isdir(join(gettempdir(), "GoogleToken", self.account_email)):
             makedirs(join(gettempdir(), "GoogleToken", self.account_email))
-        if self.account_email is None:
-            raise Exception("account_email configuration must be set.")
-        self.account_password = account_password
-        self.account_otp_secret = account_otp_secret
-        self.cookie_storage_path = cookie_storage_path if cookie_storage_path is not None \
-            else join(expanduser("~"), "{0}.cookies".format(self.account_email))
-        self.oauth_client_id = oauth_client_id
-        self.oauth_redirect_uri = oauth_redirect_uri
-        self.oauth_scope = oauth_scope
-        self.logger = logger
-        self.image_path = image_path if image_path is not None else join(
-            gettempdir(),
-            "GoogleToken",
-            self.account_email,
-            datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
-        self.execute_script = execute_script
-        self.phantomjs_path = phantomjs_path
-        self.phantomjs_config_useragent = phantomjs_config_useragent
-        self.phantomjs_log_path = phantomjs_log_path if phantomjs_log_path is not None \
-            else join(gettempdir(),
-                      "GoogleToken",
-                      self.account_email, "phantomjs.log")
-        self.cookies_ignore_discard = cookies_ignore_discard
-        self.url_accounts = url_accounts
-        self.url_my_account = url_my_account
-        self.url_service_login = url_service_login
-        self.url_accounts_no_form = url_accounts_no_form
-        self.timeout_seconds = timeout_seconds
-        self.oauth2_protocol = oauth2_protocol
-        self.oauth2_domain = oauth2_domain
-        self.oauth2_path = oauth2_path
-        self.user_agent = user_agent
-        self.default_headers = {"User-Agent": user_agent} if default_headers is None else default_headers
+
+        self.cookie_storage_path = join(expanduser("~"), "{0}.cookies".format(self.account_email)) \
+            if self.cookie_storage_path is None else self.cookie_storage_path
+
+        self.image_path = join(gettempdir(), "GoogleToken", self.account_email, datetime.now()
+                               .strftime("%Y-%m-%d_%H-%M-%S")) if \
+            self.image_path is None else self.image_path
+
+        self.phantomjs_log_path = join(gettempdir(), "GoogleToken", self.account_email, "phantomjs.log") if \
+            self.phantomjs_log_path is None else self.phantomjs_log_path
+
+        self.default_headers = {"User-Agent": self.user_agent} if self.default_headers is \
+                                                                  None else self.default_headers
+
         self.oauth2_data = {"response_type": "token",
                             "client_id": "oauth_client_id",
                             "redirect_uri": "oauth_redirect_uri",
-                            "scope": "oauth_scope"} if oauth2_data is None else oauth2_data
+                            "scope": "oauth_scope"}
 
     def json(self):
         result = {}

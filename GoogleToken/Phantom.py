@@ -1,5 +1,5 @@
 # Author:       Scott Philip (sp@scottphilip.com)
-# Version:      0.4 (13 July 2017)
+# Version:      0.5 (24 July 2017)
 # Source:       https://github.com/scottphilip/google-token/
 # Licence:      GNU GENERAL PUBLIC LICENSE (Version 3, 29 June 2007)
 
@@ -54,8 +54,7 @@ class GoogleTokenPhantomLogin(GoogleTokenBase):
         for driver_cookie in driver_cookies:
             http_cookie = self.get_cookie(driver_cookie)
             cookie_jar.set_cookie(http_cookie)
-        cookie_jar.save(super(GoogleTokenPhantomLogin, self).get_cookie_file_path(),
-                        ignore_discard=self.config.cookies_ignore_discard)
+        save_cookie_jar(self.config, cookie_jar)
 
     @staticmethod
     def get_cookie(item):

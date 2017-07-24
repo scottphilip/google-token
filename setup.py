@@ -3,12 +3,11 @@ from setuptools import setup
 setup(
     name='GoogleToken',
     description='Google User Account login automation',
-    long_description=open('README.rst').read(),
     url='http://github.com/scottphilip/google-token',
     author='Scott Philip',
     author_email='sp@scottphilip.com',
     packages=['GoogleToken'],
-    version='0.4',
+    version='0.5',
     install_requires=['selenium', 'pyotp'],
     license='GNU (v3) License',
     keywords=['Google Account', 'Access Token', 'oauth2', 'Automation'],

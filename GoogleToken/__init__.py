@@ -1,7 +1,6 @@
 # Author:       Scott Philip (sp@scottphilip.com)
-# Version:      0.4 (13 July 2017)
+# Version:      0.5 (24 July 2017)
 # Source:       https://github.com/scottphilip/google-token/
 # Licence:      GNU GENERAL PUBLIC LICENSE (Version 3, 29 June 2007)
 
-from GoogleToken.Generator import GoogleTokenGenerator
-from GoogleToken.Configuration import GoogleTokenConfiguration
+from GoogleToken.Main import get_google_token

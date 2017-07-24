@@ -62,14 +62,14 @@ Once the cookies file is created, the credentials can be omitted.
 
 .. code:: python
 
-        from GoogleToken import GoogleTokenGenerator, GoogleTokenParameters
-        parameters = GoogleTokenParameters(oauth_client_id="0000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com",
-                                  oauth_redirect_uri="https://www.website.com/google/callback",
-                                  oauth_scope="https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
-                                  account_email="user@gmail.com")
-        generator = GoogleTokenGenerator(parameters)
-        token = generator.generate()
-        print(token)
+    from GoogleToken import get_google_token
+    token, expiry = get_google_token(account_email="account@gmail.com",
+                                     account_password="password",
+                                     account_otp_secret="secret",
+                                     oauth_client_id="0000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com",
+                                     oauth_redirect_uri="https://www.website.com/google/callback",
+                                     oauth_scope="https://www.googleapis.com/auth/userinfo.profile")
+
 
 Dependencies
 ------------
