@@ -2,6 +2,7 @@
 # Version:      0.5 (24 July 2017)
 # Source:       https://github.com/scottphilip/google-token/
 # Licence:      GNU GENERAL PUBLIC LICENSE (Version 3, 29 June 2007)
+import GoogleToken.Configuration
 
 from GoogleToken.Utils import *
 from http.cookiejar import MozillaCookieJar
@@ -21,15 +22,16 @@ except ImportError:
     from urlparse import urlparse
 
 
-class GoogleTokenPhantomLogin(GoogleTokenBase):
+class GoogleTokenPhantomLogin(object):
     """
     PhantomJS log into google account to generate a refresh token.  Phantom
     is only required for the first login.
     """
 
     def __init__(self, config):
-        super(GoogleTokenPhantomLogin, self).__init__(config)
-        self.oauth2_url = super(GoogleTokenPhantomLogin, self).get_oauth_url()
+        self.config = config
+        debug(self.config, "SYSTEM_CONFIGURATION", self.config.json())
+        self.oauth2_url = get_oauth_url(self.config)
         self.driver = webdriver \
             .PhantomJS(executable_path=self.config.phantomjs_path,
                        service_log_path=self.config.phantomjs_log_path,

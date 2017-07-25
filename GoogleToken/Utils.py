@@ -25,6 +25,18 @@ except ImportError:
     from urllib2 import HTTPErrorProcessor
 
 
+def get_oauth_url(config):
+    data = {}
+    data.update(config.oauth2_data)
+    for key in data:
+        if hasattr(config, data[key]):
+            data[key] = getattr(config, data[key])
+    return "{0}://{1}{2}?{3}" \
+        .format(config.oauth2_protocol,
+                config.oauth2_domain,
+                config.oauth2_path, urlencode(data))
+
+
 class GoogleTokenHttpNoRedirect(HTTPErrorProcessor):
     """
     Http No Redirect Handler

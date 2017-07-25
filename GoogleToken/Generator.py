@@ -64,19 +64,10 @@ class GoogleTokenHttpHandler(object):
         save_cookie_jar(self.config, self.cookie_jar)
         debug(self.config, "COOKIES_SAVED")
 
-    def get_oauth_url(self):
-        data = {}
-        data.update(self.config.oauth2_data)
-        for key in data:
-            if hasattr(self.config, data[key]):
-                data[key] = getattr(self.config, data[key])
-        return "{0}://{1}{2}?{3}" \
-            .format(self.config.oauth2_protocol,
-                    self.config.oauth2_domain,
-                    self.config.oauth2_path, urlencode(data))
+
 
     def get_access_token(self):
-        request = Request(self.get_oauth_url(),
+        request = Request(get_oauth_url(self.config),
                           headers=self.config.default_headers)
         debug(self.config, "SENDING_REQUEST")
         response = self.opener.open(request)
