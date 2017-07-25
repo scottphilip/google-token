@@ -1,5 +1,5 @@
 # Author:       Scott Philip (sp@scottphilip.com)
-# Version:      0.5 (24 July 2017)
+# Version:      0.6 (25 July 2017)
 # Source:       https://github.com/scottphilip/google-token/
 # Licence:      GNU GENERAL PUBLIC LICENSE (Version 3, 29 June 2007)
 
@@ -148,8 +148,10 @@ def __get_key(config):
             encoded = b64encode(key)
             file.write(f.encrypt(encoded).decode("utf-8"))
         if osname == 'nt':
-            if not ctypes.windll.kernel32.SetFileAttributesW(key_path, 0x02):
-                raise ctypes.WinError()
+            try:
+                ctypes.windll.kernel32.SetFileAttributesW(key_path, 0x02)
+            except:
+                ignore = True
     with open(key_path, "r+") as file:
         if sys.version_info[0] >= 3:
             data = bytes(file.read(), encoding="utf-8")

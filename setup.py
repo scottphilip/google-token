@@ -7,7 +7,7 @@ setup(
     author='Scott Philip',
     author_email='sp@scottphilip.com',
     packages=['GoogleToken'],
-    version='0.5',
+    version='0.6',
     install_requires=['selenium', 'pyotp', 'cryptography'],
     license='GNU (v3) License',
     keywords=['Google Account', 'Access Token', 'oauth2', 'Automation'],

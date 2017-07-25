@@ -1,5 +1,5 @@
 # Author:       Scott Philip (sp@scottphilip.com)
-# Version:      0.5 (24 July 2017)
+# Version:      0.6 (25 July 2017)
 # Source:       https://github.com/scottphilip/google-token/
 # Licence:      GNU GENERAL PUBLIC LICENSE (Version 3, 29 June 2007)
 
@@ -60,7 +60,7 @@ class GoogleTokenConfiguration(object):
         if not isdir(join(gettempdir(), "GoogleToken", self.account_email)):
             makedirs(join(gettempdir(), "GoogleToken", self.account_email))
 
-        self.cookie_storage_path = join(expanduser("~"), "{0}.cookies".format(self.account_email)) \
+        self.cookie_storage_path = join(expanduser("~"), "{0}.tok".format(self.account_email)) \
             if self.cookie_storage_path is None else self.cookie_storage_path
 
         self.image_path = join(gettempdir(), "GoogleToken", self.account_email, datetime.now()
