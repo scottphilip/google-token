@@ -1,5 +1,5 @@
 .. image:: https://travis-ci.org/scottphilip/google-token.svg?branch=master
-:target: https://travis-ci.org/scottphilip/google-token
+    :target: https://travis-ci.org/scottphilip/google-token
 
 Google Token
 ============
