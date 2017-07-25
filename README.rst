@@ -1,4 +1,5 @@
-|Build Status|
+.. image:: https://travis-ci.org/scottphilip/google-token.svg?branch=master
+:target: https://travis-ci.org/scottphilip/google-token
 
 Google Token
 ============
@@ -91,6 +92,3 @@ Licence
 GNU General Public License (Version 3, 29 June 2007)
 
 CallerLookup Copyright © 2017 Scott Philip
-
-.. |Build Status| image:: https://travis-ci.org/scottphilip/google-token.svg?branch=master
-:target: https://travis-ci.org/scottphilip/google-token
