@@ -1,14 +1,21 @@
+import os
 from setuptools import setup
+
+
+def read(name):
+    with open(os.path.join(os.path.dirname(__file__), name)) as f:
+        return f.read()
 
 setup(
     name='GoogleToken',
     description='Google User Account login automation',
+    long_description=read('README.rst'),
     url='http://github.com/scottphilip/google-token',
     author='Scott Philip',
     author_email='sp@scottphilip.com',
     packages=['GoogleToken'],
-    version='0.6.1',
-    install_requires=['selenium', 'pyotp', 'cryptography'],
+    version='0.7',
+    install_requires=read('REQUIREMENTS.txt').splitlines(),
     license='GNU (v3) License',
     keywords=['Google Account', 'Access Token', 'oauth2', 'Automation'],
     classifiers=[

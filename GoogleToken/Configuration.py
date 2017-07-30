@@ -1,5 +1,5 @@
 # Author:       Scott Philip (sp@scottphilip.com)
-# Version:      0.6 (25 July 2017)
+# Version:      0.7 (30 July 2017)
 # Source:       https://github.com/scottphilip/google-token/
 # Licence:      GNU GENERAL PUBLIC LICENSE (Version 3, 29 June 2007)
 
@@ -8,6 +8,9 @@ from os.path import expanduser, join, isdir
 from os import makedirs
 from tempfile import gettempdir
 from datetime import datetime
+
+
+SECURE_VARIABLES = ["account_password", "account_otp_secret"]
 
 
 class GoogleTokenConfiguration(object):
@@ -82,8 +85,11 @@ class GoogleTokenConfiguration(object):
         result = {}
         for attribute in self.__dict__:
             try:
-                json.dumps(getattr(self, attribute))
-                result[attribute] = getattr(self, attribute)
+                if attribute not in SECURE_VARIABLES:
+                    json.dumps(getattr(self, attribute))
+                    result[attribute] = getattr(self, attribute)
+                else:
+                    result[attribute] = "*"*10
             except Exception:
                 ignore = True
         return json.dumps(result)

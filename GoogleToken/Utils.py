@@ -1,5 +1,5 @@
 # Author:       Scott Philip (sp@scottphilip.com)
-# Version:      0.6 (25 July 2017)
+# Version:      0.7 (30 July 2017)
 # Source:       https://github.com/scottphilip/google-token/
 # Licence:      GNU GENERAL PUBLIC LICENSE (Version 3, 29 June 2007)
 
@@ -111,12 +111,21 @@ def save_cookie_jar(config, cookie_jar):
 def open_cookie_jar(config):
     with open(config.cookie_storage_path, "r") as file:
         file_content = file.read()
-    try:
-        cookies_json = json.loads(file_content)
-    except:
-        cookies_json = json.loads(__decrypt(config=config,
-                                            encrypted_text=file_content))
+    cookies_json = _get_json(file_content)
+    if cookies_json is None:
+        decrypted = __decrypt(config=config, encrypted_text=file_content)
+        cookies_json = _get_json(decrypted)
     return requests.utils.cookiejar_from_dict(cookies_json)
+
+
+def _get_json(value):
+    try:
+        j = json.loads(value)
+        return j
+    except:
+        return None
+
+
 
 
 def __get_system_key(config):
