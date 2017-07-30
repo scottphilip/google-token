@@ -114,16 +114,19 @@ def open_cookie_jar(config):
     cookies_json = _get_json(file_content)
     if cookies_json is None:
         decrypted = __decrypt(config=config, encrypted_text=file_content)
-        cookies_json = _get_json(decrypted)
+        cookies_json = _get_json(decrypted, True)
+
     return requests.utils.cookiejar_from_dict(cookies_json)
 
 
-def _get_json(value):
+def _get_json(value, throw_on_error=False):
     try:
         j = json.loads(value)
         return j
     except:
-        return None
+        if not throw_on_error:
+            return None
+        raise
 
 
 
