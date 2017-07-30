@@ -151,9 +151,9 @@ def __get_system_key(config):
 def __get_key(config):
     h = hashlib.new("ripemd160")
     if sys.version_info[0] >= 3:
-        account = bytes(config.account_email, "utf-8")
+        account = bytes(config.account_email.upper(), "utf-8")
     else:
-        account = bytes(config.account_email)
+        account = bytes(config.account_email.upper())
     h.update(account)
     key_dir = join(dirname(config.cookie_storage_path), KEY_DIR_NAME)
     if not isdir(key_dir):
