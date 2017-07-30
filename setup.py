@@ -14,7 +14,7 @@ setup(
     author='Scott Philip',
     author_email='sp@scottphilip.com',
     packages=['GoogleToken'],
-    version='0.7.1',
+    version='0.7.2',
     install_requires=read('REQUIREMENTS.txt').splitlines(),
     license='GNU (v3) License',
     keywords=['Google Account', 'Access Token', 'oauth2', 'Automation'],

@@ -11,8 +11,8 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 import ctypes
 import sys
-from os.path import isfile
-from os import name as osname
+from os.path import isfile, isdir
+from os import name as osname, makedirs
 import hashlib
 import json
 import requests
@@ -23,6 +23,9 @@ try:
 except ImportError:
     from urllib import urlencode
     from urllib2 import HTTPErrorProcessor
+
+
+KEY_DIR_NAME = ".keys"
 
 
 def get_oauth_url(config):
@@ -152,7 +155,10 @@ def __get_key(config):
     else:
         account = bytes(config.account_email)
     h.update(account)
-    key_path = join(dirname(config.cookie_storage_path), ".{0}".format(h.hexdigest()))
+    key_dir = join(dirname(config.cookie_storage_path), KEY_DIR_NAME)
+    if not isdir(key_dir):
+        makedirs(key_dir)
+    key_path = join(key_dir, ".{0}".format(h.hexdigest()))
     f = Fernet(key=__get_system_key(config))
     if not isfile(key_path):
         key = Fernet.generate_key()
