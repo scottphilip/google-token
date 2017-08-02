@@ -89,7 +89,7 @@ def get_user_key(account=None, data_dir=None, logger=None):
     user_key_file_path = get_user_key_file_path(data_dir, account)
     if not isfile(user_key_file_path):
         if logger is not None:
-            logger.debug("CRYPTO_USER_KEY_CREATION", account, user_key_file_path)
+            logger.debug(["GOOGLE_TOKEN", "CRYPTO_USER_KEY_CREATION", account, user_key_file_path])
         random_user_key = get_string(Fernet.generate_key())
         random_user_key_encrypted = encrypt_data(get_bytes(random_user_key),
                                                  get_system_key())
