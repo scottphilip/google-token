@@ -5,7 +5,7 @@
 import json
 import requests
 from os.path import dirname
-from Crypto import encrypt, decrypt
+from GoogleToken.Crypto import encrypt, decrypt
 try:
     from urllib.parse import urlencode
     from urllib.request import HTTPErrorProcessor
