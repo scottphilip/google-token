@@ -1,5 +1,11 @@
 .. image:: https://travis-ci.org/scottphilip/google-token.svg?branch=master
-    :target: https://travis-ci.org/scottphilip/google-token
+   :target: https://travis-ci.org/scottphilip/google-token
+
+.. image:: https://img.shields.io/pypi/v/GoogleToken.svg
+   :target: https://pypi.python.org/pypi/GoogleToken
+
+.. image:: https://img.shields.io/pypi/pyversions/GoogleToken.svg
+   :target: https://pypi.python.org/pypi/GoogleToken
 
 Google Token
 ============
